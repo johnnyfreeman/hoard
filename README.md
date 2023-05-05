@@ -63,3 +63,11 @@ Pipe into bat for easier readibility.
 ```
 task list | bat --language="markdown"
 ```
+
+## Usage with git
+
+If you don't want your task list to be commited, you should add the storage file to your ignore or excludes.
+
+```
+git config --global core.excludesFile '~/.gitignore'
+```
