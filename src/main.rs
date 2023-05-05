@@ -14,6 +14,7 @@ fn main() {
         Command::Add => tasks.add(args).save(),
         Command::List => tasks.list().save(),
         Command::Remove => tasks.remove(args).save(),
+        Command::Sort => tasks.sort().save(),
     };
 
     process::exit(exit_code)
@@ -104,6 +105,12 @@ impl Tasks {
 
         0
     }
+
+    pub fn sort(&mut self) -> &mut Self {
+        self.tasks.sort();
+
+        self
+    }
 }
 
 #[derive(EnumString, Display)]
@@ -114,6 +121,8 @@ enum Command {
     Remove,
     #[strum(serialize = "list")]
     List,
+    #[strum(serialize = "sort")]
+    Sort,
 }
 
 fn display_help() {
@@ -123,4 +132,5 @@ fn display_help() {
     println!("   add <description>    - adds task");
     println!("   list                 - displays task list");
     println!("   remove <description> - removes task");
+    println!("   sort                 - sort tasks");
 }

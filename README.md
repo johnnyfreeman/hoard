@@ -34,6 +34,12 @@ three
 task remove one
 ```
 
+## Sort tasks
+
+```
+task sort
+```
+
 ## Usage with fzf
 
 fzf makes is really easy to add/remove tasks in bulk. I would recommend creating an alias for these in your `.bashrc|.zshrc|.fshrc` file.
