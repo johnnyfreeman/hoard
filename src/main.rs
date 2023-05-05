@@ -5,6 +5,8 @@ use std::process;
 use std::str::FromStr;
 use strum_macros::{Display, EnumString};
 
+const STORAGE: &str = "tasks.txt";
+
 struct Tasks {
     tasks: Vec<String>,
 }
@@ -12,7 +14,7 @@ struct Tasks {
 impl Tasks {
     fn get() -> Self {
         Tasks {
-            tasks: fs::read_to_string("tasks.txt")
+            tasks: fs::read_to_string(STORAGE)
                 .expect("File not found.")
                 .lines()
                 .map(|line| line.to_string())
@@ -50,7 +52,7 @@ impl Tasks {
         let mut file = fs::OpenOptions::new()
             .write(true)
             .truncate(true)
-            .open("tasks.txt")
+            .open(STORAGE)
             .expect("File not found.");
 
         let contents = &self.tasks.join("\n");
@@ -112,8 +114,7 @@ fn display_help() {
     println!("Usage: task <command> <args>");
     println!();
     println!("Commands:");
-    println!("   add <description> - adds task");
-    println!("   list              - displays task list");
-    println!("   remove            - removes a task");
-    println!();
+    println!("   add <description>    - adds task");
+    println!("   list                 - displays task list");
+    println!("   remove <description> - removes task");
 }
