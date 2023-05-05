@@ -49,3 +49,11 @@ fzf -m | xargs task add
 ```
 task list | fzf | xargs -d "\n" task remove
 ```
+
+## Usage with bat
+
+Pipe into bat for easier readibility.
+
+```
+task list | bat --language="markdown"
+```
