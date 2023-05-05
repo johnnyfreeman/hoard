@@ -5,71 +5,18 @@ use std::process;
 use std::str::FromStr;
 use strum_macros::{Display, EnumString};
 
-const STORAGE: &str = "tasks.txt";
+fn main() {
+    let (command, args) = parse_args(env::args());
 
-struct Tasks {
-    tasks: Vec<String>,
-}
+    let mut tasks = Tasks::get();
 
-impl Tasks {
-    fn get() -> Self {
-        Tasks {
-            tasks: fs::read_to_string(STORAGE)
-                .expect("File not found.")
-                .lines()
-                .map(|line| line.to_string())
-                .collect::<Vec<String>>(),
-        }
-    }
+    let exit_code = match command {
+        Command::Add => tasks.add(args).save(),
+        Command::List => tasks.list().save(),
+        Command::Remove => tasks.remove(args).save(),
+    };
 
-    pub fn add(&mut self, descriptions: Vec<String>) -> &mut Self {
-        for description in descriptions {
-            self.tasks.push(description);
-        }
-
-        self
-    }
-
-    pub fn list(self) -> Self {
-        println!("{}", self.tasks.join("\n"));
-
-        self
-    }
-
-    pub fn remove(&mut self, descriptions: Vec<String>) -> &mut Self {
-        for description in descriptions {
-            if let Some(index) = self.tasks.iter().position(|task| task == &description) {
-                self.tasks.remove(index);
-            } else {
-                eprintln!("Error: {:?} not found.", description);
-            }
-        }
-
-        self
-    }
-
-    pub fn save(&self) -> i32 {
-        let mut file = fs::OpenOptions::new()
-            .write(true)
-            .truncate(true)
-            .open(STORAGE)
-            .expect("File not found.");
-
-        let contents = &self.tasks.join("\n");
-        writeln!(file, "{contents}").expect("File not writable.");
-
-        0
-    }
-}
-
-#[derive(EnumString, Display)]
-enum Command {
-    #[strum(serialize = "add")]
-    Add,
-    #[strum(serialize = "remove")]
-    Remove,
-    #[strum(serialize = "list")]
-    List,
+    process::exit(exit_code)
 }
 
 fn parse_args(args: env::Args) -> (Command, Vec<String>) {
@@ -96,18 +43,77 @@ fn parse_args(args: env::Args) -> (Command, Vec<String>) {
     );
 }
 
-fn main() {
-    let (command, args) = parse_args(env::args());
+const STORAGE: &str = "tasks.txt";
 
-    let mut tasks = Tasks::get();
+struct Tasks {
+    tasks: Vec<String>,
+}
 
-    let exit_code = match command {
-        Command::Add => tasks.add(args).save(),
-        Command::List => tasks.list().save(),
-        Command::Remove => tasks.remove(args).save(),
-    };
+impl Tasks {
+    fn get() -> Self {
+        Tasks {
+            tasks: fs::read_to_string(STORAGE)
+                .unwrap_or_else(|_| {
+                    eprintln!("File {} could not be found.", STORAGE);
+                    process::exit(1);
+                })
+                .lines()
+                .map(|line| line.to_string())
+                .collect::<Vec<String>>(),
+        }
+    }
 
-    process::exit(exit_code)
+    pub fn add(&mut self, descriptions: Vec<String>) -> &mut Self {
+        for description in descriptions {
+            self.tasks.push(description);
+        }
+
+        self
+    }
+
+    pub fn list(self) -> Self {
+        println!("{}", self.tasks.join("\n"));
+
+        self
+    }
+
+    pub fn remove(&mut self, descriptions: Vec<String>) -> &mut Self {
+        for description in descriptions {
+            if let Some(index) = self.tasks.iter().position(|task| task == &description) {
+                self.tasks.remove(index);
+            } else {
+                eprintln!("Error: {} not found.", description);
+            }
+        }
+
+        self
+    }
+
+    pub fn save(&self) -> i32 {
+        let mut file = fs::OpenOptions::new()
+            .write(true)
+            .truncate(true)
+            .open(STORAGE)
+            .unwrap_or_else(|_| {
+                eprintln!("File {} could not be found.", STORAGE);
+                process::exit(1);
+            });
+
+        let contents = &self.tasks.join("\n");
+        writeln!(file, "{contents}").expect("File not writable.");
+
+        0
+    }
+}
+
+#[derive(EnumString, Display)]
+enum Command {
+    #[strum(serialize = "add")]
+    Add,
+    #[strum(serialize = "remove")]
+    Remove,
+    #[strum(serialize = "list")]
+    List,
 }
 
 fn display_help() {
