@@ -16,8 +16,7 @@ Commands:
 
 ```
 > task add one
-> task add two
-> task add three
+> task add two three
 ```
 
 ## List
@@ -33,4 +32,20 @@ three
 
 ```
 task remove one
+```
+
+## Usage with fzf
+
+fzf makes is really easy to add/remove tasks in bulk. I would recommend creating an alias for these in your `.bashrc|.zshrc|.fshrc` file.
+
+### Buik add tasks
+
+```
+fzf -m | xargs task add
+```
+
+### Bulk remove tasks
+
+```
+task list | fzf | xargs -d "\n" task remove
 ```
