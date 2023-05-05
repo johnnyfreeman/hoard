@@ -13,6 +13,14 @@ Commands:
    sort              - sort tasks
 ```
 
+## Init
+
+Creates the file needed for task storage if one doesn't already exist.
+
+```
+task init
+```
+
 ## Add
 
 ```

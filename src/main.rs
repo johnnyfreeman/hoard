@@ -8,13 +8,14 @@ use strum_macros::{Display, EnumString};
 fn main() {
     let (command, args) = parse_args(env::args().collect::<Vec<String>>());
 
-    let mut tasks = Tasks::new("tasks.txt");
+    let filename: String = "tasks.txt".to_string();
 
     let exit_code = match command {
-        Command::Add => tasks.add(args).save(),
-        Command::List => tasks.list().save(),
-        Command::Remove => tasks.remove(args).save(),
-        Command::Sort => tasks.sort().save(),
+        Command::Add => Tasks::read(&filename).add(args).write(&filename),
+        Command::Init => Tasks::create(&filename),
+        Command::List => Tasks::read(&filename).list(),
+        Command::Remove => Tasks::read(&filename).remove(args).write(&filename),
+        Command::Sort => Tasks::read(&filename).sort().write(&filename),
     };
 
     process::exit(exit_code)
@@ -43,14 +44,12 @@ fn parse_args(args: Vec<String>) -> (Command, Vec<String>) {
 }
 
 struct Tasks {
-    storage: String,
     tasks: Vec<String>,
 }
 
 impl Tasks {
-    fn new(storage: &str) -> Self {
+    fn read(storage: &String) -> Self {
         Tasks {
-            storage: storage.to_string(),
             tasks: fs::read_to_string(storage)
                 .unwrap_or_else(|_| {
                     eprintln!("File {} could not be found.", storage);
@@ -70,10 +69,10 @@ impl Tasks {
         self
     }
 
-    pub fn list(self) -> Self {
+    pub fn list(self) -> i32 {
         println!("{}", self.tasks.join("\n"));
 
-        self
+        0
     }
 
     pub fn remove(&mut self, descriptions: Vec<String>) -> &mut Self {
@@ -88,13 +87,13 @@ impl Tasks {
         self
     }
 
-    pub fn save(&self) -> i32 {
+    pub fn write(&self, filename: &String) -> i32 {
         let mut file = fs::OpenOptions::new()
             .write(true)
             .truncate(true)
-            .open(&self.storage)
+            .open(filename)
             .unwrap_or_else(|_| {
-                eprintln!("File {} could not be found.", &self.storage);
+                eprintln!("File {} could not be found.", filename);
                 process::exit(1);
             });
 
@@ -102,6 +101,23 @@ impl Tasks {
         writeln!(file, "{contents}").expect("File not writable.");
 
         0
+    }
+
+    pub fn create(filename: &String) -> i32 {
+        match fs::OpenOptions::new()
+            .create_new(true)
+            .write(true)
+            .open(filename)
+        {
+            Ok(_) => {
+                println!("File {} has been created successfullly.", filename);
+                0
+            }
+            Err(_) => {
+                eprintln!("File {} could not be created.", filename);
+                1
+            }
+        }
     }
 
     pub fn sort(&mut self) -> &mut Self {
@@ -115,12 +131,14 @@ impl Tasks {
 enum Command {
     #[strum(serialize = "add")]
     Add,
-    #[strum(serialize = "remove")]
-    Remove,
+    #[strum(serialize = "init")]
+    Init,
     #[strum(serialize = "list")]
     List,
     #[strum(serialize = "sort")]
     Sort,
+    #[strum(serialize = "remove")]
+    Remove,
 }
 
 fn display_help() {
@@ -128,6 +146,9 @@ fn display_help() {
     println!();
     println!("Commands:");
     println!("   add <description>    - adds task");
+    println!(
+        "   init                 - creates file for task storage if one does not already exist"
+    );
     println!("   list                 - displays task list");
     println!("   remove <description> - removes task");
     println!("   sort                 - sort tasks");
