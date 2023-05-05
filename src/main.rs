@@ -23,7 +23,6 @@ impl Tasks {
     pub fn add(&mut self, descriptions: Vec<String>) -> &mut Self {
         let description = descriptions
             .iter()
-            .skip(2)
             .map(|arg| arg.to_string())
             .collect::<Vec<String>>()
             .join(" ");
