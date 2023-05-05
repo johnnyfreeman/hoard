@@ -6,9 +6,9 @@ use std::str::FromStr;
 use strum_macros::{Display, EnumString};
 
 fn main() {
-    let (command, args) = parse_args(env::args());
+    let (command, args) = parse_args(env::args().collect::<Vec<String>>());
 
-    let mut tasks = Tasks::get();
+    let mut tasks = Tasks::new("tasks.txt");
 
     let exit_code = match command {
         Command::Add => tasks.add(args).save(),
@@ -20,9 +20,8 @@ fn main() {
     process::exit(exit_code)
 }
 
-fn parse_args(args: env::Args) -> (Command, Vec<String>) {
-    let binding = args.collect::<Vec<String>>();
-    let command = binding.get(1).unwrap_or_else(|| {
+fn parse_args(args: Vec<String>) -> (Command, Vec<String>) {
+    let command = args.get(1).unwrap_or_else(|| {
         display_help();
 
         std::process::exit(0);
@@ -36,26 +35,25 @@ fn parse_args(args: env::Args) -> (Command, Vec<String>) {
 
     return (
         command,
-        binding
-            .iter()
+        args.iter()
             .skip(2)
             .map(|arg| arg.to_string())
             .collect::<Vec<String>>(),
     );
 }
 
-const STORAGE: &str = "tasks.txt";
-
 struct Tasks {
+    storage: String,
     tasks: Vec<String>,
 }
 
 impl Tasks {
-    fn get() -> Self {
+    fn new(storage: &str) -> Self {
         Tasks {
-            tasks: fs::read_to_string(STORAGE)
+            storage: storage.to_string(),
+            tasks: fs::read_to_string(storage)
                 .unwrap_or_else(|_| {
-                    eprintln!("File {} could not be found.", STORAGE);
+                    eprintln!("File {} could not be found.", storage);
                     process::exit(1);
                 })
                 .lines()
@@ -94,9 +92,9 @@ impl Tasks {
         let mut file = fs::OpenOptions::new()
             .write(true)
             .truncate(true)
-            .open(STORAGE)
+            .open(&self.storage)
             .unwrap_or_else(|_| {
-                eprintln!("File {} could not be found.", STORAGE);
+                eprintln!("File {} could not be found.", &self.storage);
                 process::exit(1);
             });
 
