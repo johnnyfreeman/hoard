@@ -10,6 +10,7 @@ Commands:
    add <description> - adds task
    list              - displays task list
    remove            - removes a task
+   sort              - sort tasks
 ```
 
 ## Add
