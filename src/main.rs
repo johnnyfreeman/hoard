@@ -1,6 +1,6 @@
 use std::env;
 use std::fs;
-use std::io::Write;
+use std::io::{stdin, Write};
 use std::process;
 use std::str::FromStr;
 use strum_macros::{Display, EnumString};
@@ -21,7 +21,7 @@ fn main() {
     process::exit(exit_code)
 }
 
-fn parse_args(args: Vec<String>) -> (Command, Vec<String>) {
+fn parse_args(mut args: Vec<String>) -> (Command, Vec<String>) {
     let command = args.get(1).unwrap_or_else(|| {
         display_help();
 
@@ -34,13 +34,13 @@ fn parse_args(args: Vec<String>) -> (Command, Vec<String>) {
         process::exit(1);
     });
 
-    return (
-        command,
-        args.iter()
-            .skip(2)
-            .map(|arg| arg.to_string())
-            .collect::<Vec<String>>(),
-    );
+    args = args
+        .iter()
+        .skip(2)
+        .map(|arg| arg.to_string())
+        .collect::<Vec<String>>();
+
+    return (command, args);
 }
 
 struct Tasks {
@@ -61,9 +61,16 @@ impl Tasks {
         }
     }
 
-    pub fn add(&mut self, descriptions: Vec<String>) -> &mut Self {
-        for description in descriptions {
-            self.tasks.push(description);
+    pub fn add(&mut self, mut tasks: Vec<String>) -> &mut Self {
+        tasks.extend(
+            stdin()
+                .lines()
+                .map(|line| line.unwrap())
+                .collect::<Vec<String>>(),
+        );
+
+        for task in tasks {
+            self.tasks.push(task);
         }
 
         self
@@ -75,12 +82,19 @@ impl Tasks {
         0
     }
 
-    pub fn remove(&mut self, descriptions: Vec<String>) -> &mut Self {
-        for description in descriptions {
-            if let Some(index) = self.tasks.iter().position(|task| task == &description) {
+    pub fn remove(&mut self, mut tasks: Vec<String>) -> &mut Self {
+        tasks.extend(
+            stdin()
+                .lines()
+                .map(|line| line.unwrap())
+                .collect::<Vec<String>>(),
+        );
+
+        for task in tasks {
+            if let Some(index) = self.tasks.iter().position(|t| t == &task) {
                 self.tasks.remove(index);
             } else {
-                eprintln!("Error: {} not found.", description);
+                eprintln!("Error: {} not found.", task);
             }
         }
 

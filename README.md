@@ -56,13 +56,13 @@ fzf makes is really easy to add/remove tasks in bulk. I would recommend creating
 ### Buik add tasks
 
 ```
-fzf -m | xargs task add
+fzf -m | task add
 ```
 
 ### Bulk remove tasks
 
 ```
-task list | fzf | xargs -d "\n" task remove
+task list | fzf | task remove
 ```
 
 ## Usage with bat
