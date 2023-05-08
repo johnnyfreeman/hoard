@@ -62,12 +62,12 @@ impl Tasks {
     }
 
     pub fn add(&mut self, mut tasks: Vec<String>) -> &mut Self {
-        tasks.extend(
-            stdin()
+        if tasks.is_empty() {
+            tasks = stdin()
                 .lines()
                 .map(|line| line.unwrap())
-                .collect::<Vec<String>>(),
-        );
+                .collect::<Vec<String>>();
+        }
 
         for task in tasks {
             self.tasks.push(task);
@@ -83,12 +83,12 @@ impl Tasks {
     }
 
     pub fn remove(&mut self, mut tasks: Vec<String>) -> &mut Self {
-        tasks.extend(
-            stdin()
+        if tasks.is_empty() {
+            tasks = stdin()
                 .lines()
                 .map(|line| line.unwrap())
-                .collect::<Vec<String>>(),
-        );
+                .collect::<Vec<String>>();
+        }
 
         for task in tasks {
             if let Some(index) = self.tasks.iter().position(|t| t == &task) {
