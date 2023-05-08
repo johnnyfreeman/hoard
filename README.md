@@ -7,10 +7,11 @@
 Usage: task <command> <args>
 
 Commands:
-   add <description> - adds task
-   list              - displays task list
-   remove            - removes a task
-   sort              - sort tasks
+   init                 - create task storage file in the current directory
+   add <description>    - adds task
+   list                 - displays task list
+   remove <description> - removes a task
+   sort                 - sort tasks
 ```
 
 ## Init
