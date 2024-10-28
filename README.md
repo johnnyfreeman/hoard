@@ -1,10 +1,10 @@
-# task
+# hoard
 
 ## Help
 
 ```
-> task
-Usage: task <command> <args>
+> hoard
+Usage: hoard <command> <args>
 
 Commands:
    init                 - create task storage file in the current directory
@@ -19,20 +19,20 @@ Commands:
 Creates the file needed for task storage if one doesn't already exist.
 
 ```
-task init
+hoard init
 ```
 
 ## Add
 
 ```
-> task add one
-> task add two three
+> hoard add one
+> hoard add two three
 ```
 
 ## List
 
 ```
-> task list
+> hoard list
 one
 two
 three
@@ -41,13 +41,13 @@ three
 ## Remove task
 
 ```
-task remove one
+hoard remove one
 ```
 
 ## Sort tasks
 
 ```
-task sort
+hoard sort
 ```
 
 ## Usage with fzf
@@ -57,13 +57,13 @@ fzf makes is really easy to add/remove tasks in bulk. I would recommend creating
 ### Buik add tasks
 
 ```
-fzf -m | task add
+fzf -m | hoard add
 ```
 
 ### Bulk remove tasks
 
 ```
-task list | fzf | task remove
+task list | fzf | hoard remove
 ```
 
 ## Usage with bat
@@ -71,7 +71,7 @@ task list | fzf | task remove
 Pipe into bat for easier readibility.
 
 ```
-task list | bat --language="markdown"
+hoard list | bat --language="markdown"
 ```
 
 ## Usage with git
