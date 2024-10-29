@@ -8,7 +8,7 @@ use strum_macros::{Display, EnumString};
 fn main() {
     let (command, args) = parse_args(env::args().collect::<Vec<String>>());
 
-    let filename: String = "tasks.txt".to_string();
+    let filename: String = ".hoard_tasks".to_string();
 
     let exit_code = match command {
         Command::Add => Tasks::read(&filename).add(args).write(&filename),
