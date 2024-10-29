@@ -1,6 +1,10 @@
-# hoard
+<div align="center">
+  <h1><code>hoard</code></h1>
 
-**hoard** is a simple command-line task manager that helps you track and organize your to-do list efficiently. It provides a minimal set of commands to create, add, list, remove, and sort your tasks.
+  <p><b>hoard is a simple command-line task manager that helps you track and organize your to-do list efficiently. It provides a minimal set of commands to create, add, list, remove, and sort your tasks.</b></p>
+</div>
+
+![hoard](https://github.com/user-attachments/assets/6819e242-271c-46bd-bdc7-197b1488a1ae)
 
 ## Installation
 
